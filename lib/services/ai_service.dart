@@ -2,7 +2,6 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'dart:convert';
 
 class AiService {
-  /// Generates personalized travel suggestion using Firebase Vertex AI.
   static Future<Map<String, dynamic>> getTravelRecommendation({
     required int duration,
     required double budget,

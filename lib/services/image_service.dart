@@ -3,8 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import 'package:lab_assignment1_chongshaoyi/config/secrets.dart';
+
 class ImageGenerationService {
-  static const String apiKey = String.fromEnvironment('HF_API_KEY');
+  // i have place the API key into secrets.dart to avoid the API key from being exposed
+  static const String apiKey = Secrets.hugginFaceApiKey != ''
+      ? Secrets.hugginFaceApiKey
+      : String.fromEnvironment('HF_API_KEY');
   static const String apiUrl =
       'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
 
