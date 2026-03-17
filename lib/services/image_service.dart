@@ -1,17 +1,43 @@
-class ImageService {
-  /// Generates a travel destination poster URL using Pollinations AI.
-  static String generatePosterUrl({
-    required String destination,
-    required String travelType,
-  }) {
-    // Construct the prompt for the image generation
-    final prompt =
-        'A beautiful, high-quality, cinematic travel poster of $destination. Style: modern, vibrant, professional travel advertising. Vibe: $travelType travel experience, breathtaking scenery, no text.';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
-    // Encode the prompt for the URL
-    final encodedPrompt = Uri.encodeComponent(prompt);
+class ImageGenerationService {
+  static const String apiKey = String.fromEnvironment('HF_API_KEY');
+  static const String apiUrl =
+      'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
 
-    // Return the URL for the generated image
-    return 'https://image.pollinations.ai/prompt/$encodedPrompt?width=800&height=1200&nologo=true';
+  static Future<Uint8List> generateImage(String prompt) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "inputs": prompt,
+          "parameters": {
+            "width": 512,
+            "height": 768,
+            "num_inference_steps": 50,
+            "guidance_scale": 7.5,
+          },
+          "options": {"wait_for_model": true},
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        throw Exception(
+          'Failed to generate image: ${response.statusCode} - ${response.reasonPhrase}',
+        );
+      }
+    } catch (e) {
+      debugPrint('Error generating image: $e');
+      rethrow;
+    }
   }
 }

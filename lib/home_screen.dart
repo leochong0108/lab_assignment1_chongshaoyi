@@ -15,7 +15,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _budgetController = TextEditingController();
   final TextEditingController _participantsController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-  final TextEditingController _apiKeyController = TextEditingController();
 
   String _selectedTravelType = 'Mid-Range';
   final List<String> _travelTypes = ['Budget', 'Mid-Range', 'Luxury'];
@@ -26,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _budgetController.dispose();
     _participantsController.dispose();
     _destinationController.dispose();
-    _apiKeyController.dispose();
     super.dispose();
   }
 
@@ -37,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => ResultScreen(
-            apiKey: _apiKeyController.text,
             duration: int.parse(_durationController.text),
             budget: double.parse(_budgetController.text),
             participants: int.parse(_participantsController.text),
@@ -71,25 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // API Key
-                TextFormField(
-                  controller: _apiKeyController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Gemini API Key',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.key),
-                    helperText: "Required for AI logic. Get it from Google AI Studio.",
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'API Key is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
                 // Destination
                 TextFormField(
                   controller: _destinationController,
@@ -172,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // Type of Travel
                 DropdownButtonFormField<String>(
-                  value: _selectedTravelType,
+                  initialValue: _selectedTravelType,
                   decoration: const InputDecoration(
                     labelText: 'Type of Travel',
                     border: OutlineInputBorder(),

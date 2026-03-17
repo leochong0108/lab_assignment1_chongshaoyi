@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'services/image_service.dart';
 import 'services/ai_service.dart';
 
 class ResultScreen extends StatefulWidget {
-  final String apiKey;
   final int duration;
   final double budget;
   final int participants;
@@ -12,7 +12,6 @@ class ResultScreen extends StatefulWidget {
 
   const ResultScreen({
     super.key,
-    required this.apiKey,
     required this.duration,
     required this.budget,
     required this.participants,
@@ -26,18 +25,19 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   late Future<Map<String, dynamic>> _recommendationFuture;
-  late String _posterUrl;
+  late Future<Uint8List> _imageFuture;
 
   @override
   void initState() {
     super.initState();
-    _posterUrl = ImageService.generatePosterUrl(
-      destination: widget.destination,
-      travelType: widget.travelType,
-    );
+    
+    // Construct the prompt for the image generation
+    final imagePrompt = 
+        'A beautiful, high-quality, cinematic travel poster of ${widget.destination}. Style: modern, vibrant, professional travel advertising. Vibe: ${widget.travelType} travel experience, breathtaking scenery, no text.';
+
+    _imageFuture = ImageGenerationService.generateImage(imagePrompt);
 
     _recommendationFuture = AiService.getTravelRecommendation(
-      apiKey: widget.apiKey,
       duration: widget.duration,
       budget: widget.budget,
       participants: widget.participants,
@@ -136,26 +136,39 @@ class _ResultScreenState extends State<ResultScreen> {
                   Stack(
                     alignment: Alignment.bottomLeft,
                     children: [
-                      Image.network(
-                        _posterUrl,
-                        width: double.infinity,
-                        height: 300,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const SizedBox(
-                            height: 300,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 300,
-                            color: Colors.grey[300],
-                            child: const Center(
-                              child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                            ),
-                          );
+                      FutureBuilder<Uint8List>(
+                        future: _imageFuture,
+                        builder: (context, imageSnapshot) {
+                          if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                            return Container(
+                              height: 300,
+                              width: double.infinity,
+                              color: Colors.black12,
+                              child: const Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (imageSnapshot.hasError) {
+                            return Container(
+                              height: 300,
+                              width: double.infinity,
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                              ),
+                            );
+                          } else if (imageSnapshot.hasData) {
+                            return Image.memory(
+                              imageSnapshot.data!,
+                              width: double.infinity,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            );
+                          } else {
+                            return Container(
+                              height: 300,
+                              width: double.infinity,
+                              color: Colors.grey[300],
+                            );
+                          }
                         },
                       ),
                       Container(

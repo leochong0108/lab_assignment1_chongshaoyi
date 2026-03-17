@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "437753445814",
+    "project_id": "lab-assigment-39c63",
+    "storage_bucket": "lab-assigment-39c63.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437753445814:android:f8ac26a8e876ce6fcb5517",
+        "android_client_info": {
+          "package_name": "com.example.lab_assignment1_chongshaoyi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGy5uqNFui5lH4QkD_uwc1c2fQRk7UYXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

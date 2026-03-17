@@ -1,19 +1,19 @@
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'dart:convert';
 
 class AiService {
-  /// Generates personalized travel suggestion using Gemini given the travel parameters.
+  /// Generates personalized travel suggestion using Firebase Vertex AI.
   static Future<Map<String, dynamic>> getTravelRecommendation({
-    required String apiKey,
     required int duration,
     required double budget,
     required int participants,
     required String destination,
     required String travelType,
   }) async {
-    final model = GenerativeModel(
+    // Model initialization through Firebase AI SDK
+    final model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.5-flash-lite',
-      apiKey: apiKey,
+      generationConfig: GenerationConfig(temperature: 0.7),
     );
 
     final prompt =
@@ -45,7 +45,6 @@ Return the response ONLY in valid JSON format. Do not use Markdown tags (e.g. ``
 
     if (response.text != null) {
       try {
-        // Attempt to clean any markdown if the model hallucinates it anyway
         var cleanedText = response.text!.trim();
         if (cleanedText.startsWith('```json')) {
           cleanedText = cleanedText.substring(7);
